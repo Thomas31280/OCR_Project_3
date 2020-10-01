@@ -1,0 +1,12 @@
+on va créer un boucle while qui va itérer tant que le jeu n'est pas terminé ( donc sur un booléen qui va passer à false quand on gagne ou perd
+on définit une variable input qui va stocker la valeur de l'input indiqué dans la console
+on va faire appel à la fonction move avec en paramètre la variable qui stocke l'input
+on fait ensuite appel à la fonction item_looted avec macgyver en paramètre
+ensuite, on lance la fonction craft avec macgyver
+
+si macgyver.position = guard.position
+on passe gameplay à false
+et si seringue in macgyver.stuff
+on affiche "you win the game"
+sinon
+on affiche "game_over"

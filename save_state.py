@@ -119,7 +119,7 @@ class Items:
         
         if self.location == macgyver.position:
             self.looted = True
-            macgyver.stuff.append(str(self.name))
+            macgyver.stuff.append(self.name)
             self.location = None                                                    # Pour que l'item ramassé ne soit plus récupérable !!!
         return macgyver.stuff                                                       # En option, car nous n'avons pas vraiment besoin de retourner quoi que ce soit...
 
@@ -141,20 +141,20 @@ class MacGyver:
         self.position = starting_position
         self.name = name
 
-    def move(self, player_input, practicable_zones):
+    def move(self, input, practicable_zones):
         
         buffer_position = None
 
-        if player_input == "front":
+        if input == "front":
             buffer_position = (self.position[0], self.position[1]+1)
         
-        elif player_input == "back":
+        elif input == "back":
             buffer_position = (self.position[0], self.position[1]-1)
         
-        elif player_input == "right":
+        elif input == "right":
             buffer_position = (self.position[0]+1, self.position[1])
         
-        elif player_input == "left":
+        elif input == "left":
             buffer_position = (self.position[0]-1, self.position[1])
         
         if buffer_position in practicable_zones:
@@ -191,21 +191,7 @@ def main():
                 guard = Guard((int(x_loc), int(y_loc)), name)
             elif name == "MacGyver":
                 macgyver = MacGyver((int(x_loc), int(y_loc)), name)
-    while macgyver.position != guard.position:
-        player_input = input("Entrez votre déplacement : front, back, right ou left")
-        MacGyver.move(macgyver, player_input, practicable_zones)
-        for i in range(0, len(items)):
-            Items.item_looted(items[i], macgyver)
-        MacGyver.craft(macgyver)
-        print(items[0].location, items[1].location, items[2].location)
-        print("Position :", macgyver.position)
-        print("Stuff :", macgyver.stuff)
-        if macgyver.position == guard.position:
-            if "seringue" in macgyver.stuff:
-                print("You win the game")
-            else:
-                print("Game Over")
-        
+    
     
 if __name__ == "__main__":
     main()
