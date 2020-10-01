@@ -74,4 +74,23 @@ for element in global_map:                                                 # On 
         pass                                                               # On ne fait rien
 
 print("Not Practicable Zones :")
+<<<<<<< HEAD
 print(not_practicable_zones)
+
+while macgyver.position != guard.position:
+        player_input = input("Entrez votre déplacement : front, back, right ou left")
+        MacGyver.move(macgyver, player_input, practicable_zones)
+        for i in range(0, len(items) - 1):
+            Items.item_looted(items[i], macgyver)
+        MacGyver.craft(macgyver)
+        print(items[0].location, items[1].location, items[2].location)
+        print("Position :", macgyver.position)
+        print("Stuff :", macgyver.stuff)
+        if macgyver.position == guard.position:
+            if "seringue" in macgyver.stuff:
+                print("You win the game")
+            else:
+                print("Game Over")
+=======
+print(not_practicable_zones)
+>>>>>>> cbb2c8feef4f21f44674860fae74e7e6ab4f678d
