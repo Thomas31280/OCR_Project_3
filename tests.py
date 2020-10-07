@@ -265,6 +265,7 @@ def main():
             else:
                 print("Game Over")
                 macgyver.stuff = []
+        print("over")
         pygame.display.flip()
         
     
