@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import pygame
 from pygame.locals import *
 
@@ -41,3 +42,17 @@ while continuer:
     
     window.blit(ether_sprite,(212,96))
     pygame.display.flip()
+=======
+<<<<<<< HEAD
+k = (1,2,3)
+
+print(len(k)-1)
+=======
+k = []
+
+with open("test_text_file.txt") as f:
+    for line in f:
+        print(line)
+        print(type(line))
+>>>>>>> cbb2c8feef4f21f44674860fae74e7e6ab4f678d
+>>>>>>> 5d35739b316d81f6a006853957b48211ac4078f7
