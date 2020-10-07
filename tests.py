@@ -1,92 +1,272 @@
-wall = [(1,0,0,4,"+"),(1,4,3,0,"+"),(4,4,0,5,"+"),(4,9,3,0,"+"),(7,9,0,4,"+"),(7,13,4,0,"+"),(11,13,0,7,"-"),(11,6,4,0,"-"),(7,6,0,3,"-"),(7,3,6,0,"+"),(13,3,0,4,"-"),(6,12,4,0,"-"),(2,12,0,3,"-"),(9,12,0,3,"-"),(12,8,1,0,"+"),(13,8,0,3,"-"),(6,3,0,2,"-"),(6,1,5,0,"+")]
-global_map = []
-practicable_zones = []
-not_practicable_zones = []
+import random
+import pygame                                                                                                # Importation librairie pygame
+from pygame.locals import *
+
+class Map:
+
+    def __init__(self, map_stats, path_builder):
+        
+        self.height = map_stats["Height_Unity"]
+        self.width = map_stats["Width_Unity"]
+        self.path_builder = path_builder
 
 
 ##############################################
 ###Génération de la liste practicable_zones###
 ##############################################
 
-for list_element in wall:                                                  # Pour chaque tuple de la liste wall...
-    not_free = ((list_element[0], list_element[1]))                        # On va lire les deux premiers éléments (0 et 1) et on va créer un nouveau tuple (not_free) avec ces éléments...
-    practicable_zones.append(not_free)                                     # On va stocker ce tuple not_free dans practicable_zones (pour ne pas qu'il se perde)
-    tuple_element_2 = list_element[2]                                      # ...et on va venir lire les trois derniers éléments (2,3 et 4) du tuple, et on va les stocker indépendament dans 3 variables.
-    tuple_element_3 = list_element[3]
-    tuple_element_4 = list_element[4]
     
-    if tuple_element_2 != 0:                                               # Puis si l'élément 2 est différent de 0 :
-        for k in range(1, tuple_element_2):                                # ... on initialise une boucle qui va itérer sur cette valeur.
-            if tuple_element_4 == "+":                                     # On va maintenant venir lire l'élément 4 ( stocké dans une variable ) et s'il vaut "+":
-                new_zone = (list_element[0]+k, list_element[1])            # ... alors on prend le tuple "not_free" et à chaque itération, on va ajouter 1 à l'élément 0 du tuple...
-                practicable_zones.append(new_zone)                         # ... puis on envoie le tuple dans practicable_zones !
-            if tuple_element_4 == "-":                                     # Et si l'élément 4 vaut "-":
-                new_zone = (list_element[0]-k, list_element[1])            # ... alors on prend le tuple "not_free" et à chaque itération, on va soustraire 1 à l'élément 0 du tuple...
-                practicable_zones.append(new_zone)                         # ... puis on envoie le tuple dans practicable_zones !
+    def practicable_zones(self, path_builder):
+        
+        practicable_zones = []
+        
+        for list_element in path_builder:
+            free_zone = ((list_element[0], list_element[1]))
+            practicable_zones.append(free_zone)
+            x_translation = list_element[2]
+            y_translation = list_element[3]
+            operator = list_element[4]
+            
+            if x_translation != 0:
+                for k in range(1, x_translation):
+                    if operator == "+":
+                        new_zone = (list_element[0]+k, list_element[1])
+                        practicable_zones.append(new_zone)
+                    elif operator == "-":
+                        new_zone = (list_element[0]-k, list_element[1])
+                        practicable_zones.append(new_zone)
 
-    if tuple_element_3 != 0:                                               # Enfin, si c'est l'élément 3 est différent de 0 :
-        for k in range(1, tuple_element_3):                                # ... on initialise une boucle qui va itérer sur cette valeur.
-            if tuple_element_4 == "+":                                     # On va maintenant venir lire l'élément 4 ( stocké dans une variable ) et s'il vaut "+":
-                new_zone = (list_element[0], list_element[1]+k)            # ... alors on prend le tuple "not_free" et à chaque itération, on va ajouter 1 à l'élément 1 du tuple...
-                practicable_zones.append(new_zone)                         # ... puis on envoie le tuple dans practicable_zones !
-            if tuple_element_4 == "-":                                     # Et si l'élément 4 vaut "-":
-                new_zone = (list_element[0], list_element[1]-k)            # ... alors on prend le tuple "not_free" et à chaque itération, on va soustraire 1 à l'élément 1 du tuple...
-                practicable_zones.append(new_zone)                         # ... puis on envoie le tuple dans practicable_zones !
-    
-    else:                                                                  # Si ni l'élément 2 ni l'élément 3 ne sont différent de 0:
-        pass                                                               # On ne fait rien
+            if y_translation != 0:
+                for k in range(1, y_translation):
+                    if operator == "+":
+                        new_zone = (list_element[0], list_element[1]+k)
+                        practicable_zones.append(new_zone)
+                    elif operator == "-":
+                        new_zone = (list_element[0], list_element[1]-k)
+                        practicable_zones.append(new_zone)
+            
+            else:
+                pass
 
-print("Practicable Zones List :")
-print()
-print(practicable_zones)
-print("----------------------------------------------")
-print()
+        return practicable_zones
 
 
 #######################################
 ###Génération de la liste global_map###
 #######################################
 
-height = 15                                                                # On commence par déterminer Height comme la hauteur de notre global_map
-width = 15                                                                 # On fait de même avec Width la largeur
-
-for x_axe in range(0, width):                                              # On commence par initialiser une boucle qui va itérer sur la largeur de la map
-    for y_axe in range(0, height):                                         # ... puis une seconde boucle qui va itérer sur la hauteur...
-        grid = (x_axe, y_axe)                                              # Et à chaque itération, on génère un tuple avec la variable de la première boucle pour premier élément, et celle de la seconde pour second élément.
-        global_map.append(grid)                                            # Puis on envoie ce tuple dans la liste global_map. On va ainsi obtenir toutes les cases de notre map sous forme de tuples.
-
-print("Global Map List :")
-print()
-print(global_map)
-print("----------------------------------------------")
-print()
-
+    def map_generation(self, height, width):
+        
+        global_map = []
+        
+        for x_axe in range(0, width):
+            for y_axe in range(0, height):
+                grid = (x_axe, y_axe)
+                global_map.append(grid)
+        return global_map
 
 
 ##################################################
 ###Génération de la liste not_practicable_zones###
 ##################################################
 
-for element in global_map:                                                 # On créé une boucle qui va itérer sur global_map
-    if element not in practicable_zones:                                   # Si l'élément en cours de lecture n'est pas dans practicable_zones
-        not_practicable_zones.append(element)                              # On ajoute l'élément dans not_practicable_zones
-    else:                                                                  # Sinon :
-        pass                                                               # On ne fait rien
+    def not_practicable_zones(self, global_map, practicable_zones):
+        
+        not_practicable_zones = []
 
-print("Not Practicable Zones :")
-print(not_practicable_zones)
+        for element in global_map:
+            if element not in practicable_zones:
+                not_practicable_zones.append(element)
+        return not_practicable_zones
 
-while macgyver.position != guard.position:
-        player_input = input("Entrez votre déplacement : front, back, right ou left")
-        MacGyver.move(macgyver, player_input, practicable_zones)
-        for i in range(0, len(items) - 1):
+
+class Items:
+
+    def __init__(self, possible_positions, name):
+        
+        self.possible_positions = possible_positions
+        self.looted = False
+        self.name = name.strip()
+
+################################################
+###Répartition du loot dans practicable_zones###
+################################################
+
+    def item_location(self, possible_positions, not_possible_position):
+        
+        cond = 1
+        reserved_locations = []
+        while cond:
+            random_loc = random.randint(1, len(possible_positions) - 1)
+            coordinate = possible_positions[random_loc]
+            if coordinate != not_possible_position and coordinate not in reserved_locations:
+                self.location = possible_positions[random_loc]
+                reserved_locations.append(coordinate)
+                cond = 0
+
+        return self.location
+
+
+####################################
+###Gestion du ramassage des items###
+####################################
+
+    def item_looted(self, macgyver):
+        
+        if self.location == macgyver.position:
+            self.looted = True
+            macgyver.stuff.append(str(self.name))
+            self.location = None                                                    # Pour que l'item ramassé ne soit plus récupérable !!!
+        return macgyver.stuff                                                       # En option, car nous n'avons pas vraiment besoin de retourner quoi que ce soit...
+
+
+class Guard:
+
+    def __init__(self, position, name):
+
+        self.position = position
+        self.name = name
+        
+
+class MacGyver:
+
+    def __init__(self, starting_position, name):
+
+        self.stuff = []
+        self.live = True
+        self.position = starting_position
+        self.name = name
+
+    def move(self, player_input, practicable_zones):
+        
+        buffer_position = None
+
+        if player_input == "front":
+            buffer_position = (self.position[0], self.position[1]+1)
+        
+        elif player_input == "back":
+            buffer_position = (self.position[0], self.position[1]-1)
+        
+        elif player_input == "right":
+            buffer_position = (self.position[0]+1, self.position[1])
+        
+        elif player_input == "left":
+            buffer_position = (self.position[0]-1, self.position[1])
+        
+        if buffer_position in practicable_zones:
+            self.position = buffer_position
+            return self.position
+        else:
+            return print("Déplacement impossible. Vous devez rester dans les limites du labyrinthe")
+
+
+    def craft(self):
+        
+        if "aiguille" in self.stuff and "tube_plastique" in self.stuff and "ether" in self.stuff:
+            self.stuff = ["seringue"]
+            print("Félicitation, vous avez fabriqué la seringue ! Vous pouvez endormir le garde !")
+
+
+def main():
+
+    map_stats = {}
+    path_builder = []
+    with open("map_stats.txt") as ms:
+        for line in ms:
+            (key, val) = line.split()
+            map_stats[key] = int(val)
+        
+    with open ("path_builder.txt") as pb:
+        for line in pb.readlines():
+            value = line.split(",")
+            path_builder.append((int(value[0]),int(value[1]),int(value[2]),int(value[3]),str(value[4])))
+
+    my_map = Map(map_stats, path_builder)
+    practicable_zones = Map.practicable_zones(my_map, my_map.path_builder)
+    global_map = Map.map_generation(my_map, my_map.height, my_map.width)
+    not_practicable_zones = Map.not_practicable_zones(my_map, global_map, practicable_zones)
+    items = []
+    guard = None
+    macgyver = None
+    with open("starting_characters_position.txt") as scp:
+        for line in scp.readlines():
+            (name, x_loc, y_loc) = line.split()
+            if name == "Guard":
+                guard = Guard((int(x_loc), int(y_loc)), name)
+            elif name == "MacGyver":
+                macgyver = MacGyver((int(x_loc), int(y_loc)), name)
+    with open("items.txt") as itms:
+        for line in itms:
+            line = Items(practicable_zones, line)
+            Items.item_location(line, line.possible_positions, guard.position)
+            items.append(line)
+    
+    print("Le jeu a été initialisé avec succès !")
+    print(items[0].name,items[1].name,items[2].name)
+
+    pygame.init()                                                                                            # Initialisation des modules
+    window = pygame.display.set_mode((map_stats["Window_Width"], map_stats["Window_Height"]))                # Création de la fenêtre
+    width_pps = map_stats["Window_Width"]/map_stats["Width_Unity"]
+    height_pps =  map_stats["Window_Height"]/map_stats["Height_Unity"]
+
+    wall_sprite = pygame.image.load("wall.png").convert()                                                    # Import de tous les sprites
+    path_sprite = pygame.image.load("path.png").convert()
+    departure_sprite = pygame.image.load("departure.png").convert()
+    macgyver_sprite = pygame.image.load("MacGyver.png").convert_alpha()
+    guard_sprite = pygame.image.load("Gardien.png").convert_alpha()
+    aiguille_sprite = pygame.image.load("aiguille.png").convert()
+    ether_sprite = pygame.image.load("ether.png").convert()
+    tube_plastique_sprite = pygame.image.load("tube_plastique.png").convert()
+    
+
+    while macgyver.position != guard.position:
+        pygame.time.Clock().tick(30)
+        for map_zone in global_map:
+            if map_zone in practicable_zones:
+                window.blit(path_sprite, (map_zone[0]*(width_pps), map_zone[1]*(height_pps)))
+            else:
+                window.blit(wall_sprite, (map_zone[0]*(width_pps), map_zone[1]*(height_pps)))
+    
+        window.blit(guard_sprite, (guard.position[0]*width_pps, guard.position[1]*height_pps))
+        window.blit(macgyver_sprite, (macgyver.position[0]*width_pps, macgyver.position[1]*height_pps))
+        
+        for event in pygame.event.get():
+            if event.type == KEYDOWN and event.key == K_UP:
+                player_input = "back"
+                MacGyver.move(macgyver, player_input, practicable_zones)
+
+            elif event.type == KEYDOWN and event.key == K_DOWN:
+                player_input = "front"
+                MacGyver.move(macgyver, player_input, practicable_zones)
+
+            elif event.type == KEYDOWN and event.key == K_RIGHT:
+                player_input = "right"
+                MacGyver.move(macgyver, player_input, practicable_zones)
+
+            elif event.type == KEYDOWN and event.key == K_LEFT:
+                player_input = "left"
+                MacGyver.move(macgyver, player_input, practicable_zones)
+            
+            elif event.type == QUIT:
+                macgyver.stuff = []
+                macgyver.position = guard.position
+        
+        for i in range(0, len(items)):
             Items.item_looted(items[i], macgyver)
+            if items[i].location != None:
+                name = items[i].name.strip()+"_sprite"
+                window.blit(vars()[name], (items[i].location[0]*(width_pps), items[i].location[1]*(height_pps)))
+
         MacGyver.craft(macgyver)
-        print(items[0].location, items[1].location, items[2].location)
-        print("Position :", macgyver.position)
-        print("Stuff :", macgyver.stuff)
         if macgyver.position == guard.position:
             if "seringue" in macgyver.stuff:
                 print("You win the game")
+                macgyver.stuff = []
             else:
                 print("Game Over")
+                macgyver.stuff = []
+        pygame.display.flip()
+        
+    
+if __name__ == "__main__":
+    main()
