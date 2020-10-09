@@ -107,7 +107,7 @@ class Items:
     a sector assigned to an item, it is no longer available!
     """
 
-    def item_location(self, possible_positions):
+    def item_location(self, possible_positions, not_possible_position):
         
         random_loc = random.randint(1, len(possible_positions) - 1)
         self.location = possible_positions[random_loc]
