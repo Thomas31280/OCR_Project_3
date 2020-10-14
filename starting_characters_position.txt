@@ -1,2 +1,0 @@
-MacGyver 1 0
-Guard 13 0

@@ -1,31 +1,32 @@
 import random
 import pygame
+import logging as lg
 from pygame.locals import *
 
-import constant_storage as cs
-import txt_interpretor as ti
+import constant_storage
+import txt_interpretor
 
-"""
-The Map class manages all the logical part of the Map and contains
-all the methods needed for its generation.
-"""
+lg.basicConfig(level=lg.INFO)
 
 
 class Map:
+    """
+    The Map class manages all the logical part of the Map and contains
+    all the methods needed for its generation.
+    """
 
     def __init__(self, path_builder):
 
-        self.height = cs.HEIGHT_UNITY
-        self.width = cs.WIDTH_UNITY
+        self.height = constant_storage.HEIGHT_UNITY
+        self.width = constant_storage.WIDTH_UNITY
         self.path_builder = path_builder
 
-    """
-    From the path_builder.txt, we generate the list of all tuples
-    of two elements, which correspond to the cartesian coordinates of the
-    sectors of the matrix which will be considered as practicables.
-    """
-
     def practicable_zones(self, path_builder):
+        """
+        From the path_builder.txt, we generate the list of all tuples
+        of two elements, which correspond to the cartesian coordinates of the
+        sectors of the matrix which will be considered as practicables.
+        """
 
         practicable_zones = []
 
@@ -59,13 +60,12 @@ class Map:
 
         return practicable_zones
 
-    """
-    This method generates all the sectors of the matrix
-    representing the map. Each sector is represented by a tuple
-    of cartesian coordinates and stored in the list global_map.
-    """
-
     def map_generation(self, height, width):
+        """
+        This method generates all the sectors of the matrix
+        representing the map. Each sector is represented by a tuple
+        of cartesian coordinates and stored in the list global_map.
+        """
 
         global_map = []
 
@@ -75,12 +75,11 @@ class Map:
                 global_map.append(grid)
         return global_map
 
-    """
-    Having generated the global matrix and identified the practicable sectors,
-    we can deduce the impracticable sectors.
-    """
-
     def not_practicable_zones(self, global_map, practicable_zones):
+        """
+        Having generated the global matrix and identified the practicable
+        sectors, we can deduce the impracticable sectors.
+        """
 
         not_practicable_zones = []
 
@@ -90,39 +89,35 @@ class Map:
         return not_practicable_zones
 
 
-"""
-Management of all the logical part of Items.
-"""
-
-
 class Items:
+    """
+    Management of all the logical part of Items.
+    """
 
     def __init__(self, name):
 
         self.looted = False
         self.name = name.strip()
 
-    """
-    Knowing the practicable areas of the matrix, we will assign
-    to the items a random position among these areas. We will exclude
-    the positions of MacGyver and the guard, and ensure that once
-    a sector assigned to an item, it is no longer available!
-    """
-
     def item_location(self, possible_positions):
+        """
+        Knowing the practicable areas of the matrix, we will assign
+        to the items a random position among these areas. We will exclude
+        the positions of MacGyver and the guard, and ensure that once
+        a sector assigned to an item, it is no longer available!
+        """
 
         random_loc = random.randint(1, len(possible_positions) - 1)
         self.location = possible_positions[random_loc]
         self.item_index = random_loc  # Réduction du nombre d'opérations
         return self.location
 
-    """
-    Here we manage the logical part of collecting items. When
-    MacGyver passes on an item, he picks it up and the status "picked up"
-    of the item changes to True. It also removes its position attribute.
-    """
-
     def item_looted(self, macgyver):
+        """
+        Here we manage the logical part of collecting items. When
+        MacGyver passes on an item, he picks it up and the status "picked up"
+        of the item changes to True. It also removes its position attribute.
+        """
 
         if self.location == macgyver.position:
             self.looted = True
@@ -131,40 +126,35 @@ class Items:
         return macgyver.stuff
 
 
-"""
-Guard generation. We notice that the instance of this
-class has only attributes and no method.
-"""
-
-
 class Guard:
+    """
+    Guard generation. We notice that the instance of this
+    class has only attributes and no method.
+    """
 
-    def __init__(self, position, name):
+    def __init__(self):
 
-        self.position = position
-        self.name = name
-
-
-"""
-Management of all MacGyver's methods and attributes.
-"""
+        self.position = constant_storage.GUARD_POSITION_INIT
+        self.name = "Guard"
 
 
 class MacGyver:
+    """
+    Management of all MacGyver's methods and attributes.
+    """
 
-    def __init__(self, starting_position, name):
+    def __init__(self):
 
         self.stuff = []
-        self.position = starting_position
-        self.name = name
-
-    """
-    Logic of MacGyver's displacement in the matrix. We
-    here will vary its position attribute by checking
-    that the user's command is consistent.
-    """
+        self.position = constant_storage.MACGYVER_POSITION_INIT
+        self.name = "MacGyver"
 
     def move(self, player_input, practicable_zones):
+        """
+        Logic of MacGyver's displacement in the matrix. We
+        here will vary its position attribute by checking
+        that the user's command is consistent.
+        """
 
         buffer_position = None
 
@@ -184,67 +174,63 @@ class MacGyver:
             self.position = buffer_position
             return self.position
         else:
-            return print("Déplacement impossible. Vous devez rester \
+            return lg.info("Déplacement impossible. Vous devez rester \
 dans les limites du labyrinthe")
 
-    """
-    Definition of the method allowing to recover the syringe.
-    We check here that all the conditions are met for its
-    manufacturing.
-    """
-
     def craft(self, items):
+        """
+        Definition of the method allowing to recover the syringe.
+        We check here that all the conditions are met for its
+        manufacturing.
+        """
 
         if items[0].looted and items[1].looted and items[2].looted:
             print("Seringue fabriquée ! Vous pouvez endormir le garde.")
             self.stuff = ["seringue"]
 
 
-"""
-Management of all the graphic part of the program.
-This class has only one class method,
-because it is not intended to create instances.
-"""
-
-
 class Display:
-
     """
-    Here, we will use all the elements of the logical structure
-    code to generate the correct display. We will therefore inject
-    a lot of parameters in this class method. We
-    will find a while function that will iterate 30 times per second as long as
-    that the user does not close the pygame graphic interface.
+    Management of all the graphic part of the program.
+    This class has only one class method,
+    because it is not intended to create instances.
     """
 
     @classmethod
     def display_routine(cls, global_map, practicable_zones, guard,
                         macgyver, items):
+        """
+        Here, we will use all the elements of the logical structure
+        code to generate the correct display. We will therefore inject
+        a lot of parameters in this class method. We
+        will find a while function that will iterate 30 times per second as
+        long as that the user does not close the pygame graphic interface.
+        """
 
         pygame.init()
-        window = pygame.display.set_mode((cs.WINDOW_WIDTH, cs.WINDOW_HEIGHT))
-        AIGUILLE_SPRITE = pygame.image.load("display/aiguille.png").convert()
-        ETHER_SPRITE = pygame.image.load("display/ether.png").convert()
-        TUBE_PLASTIQUE_SPRITE = pygame.image.load("display/tube\
-_plastique.png").convert()
-
+        window = pygame.display.set_mode((constant_storage.WINDOW_WIDTH,
+                                          constant_storage.WINDOW_HEIGHT))
         display = True
         moving_functions = True
+
         while display:
             pygame.time.Clock().tick(30)
             for map_zone in global_map:
                 if map_zone in practicable_zones:
-                    window.blit(cs.PATH_SPRITE, (map_zone[0]*cs.WIDTH_PPS,
-                                                 map_zone[1]*cs.HEIGHT_PPS))
+                    window.blit(constant_storage.PATH_SPRITE, (map_zone[0] *
+                                constant_storage.WIDTH_PPS, map_zone[1] *
+                                constant_storage.HEIGHT_PPS))
                 else:
-                    window.blit(cs.WALL_SPRITE, (map_zone[0]*cs.WIDTH_PPS,
-                                                 map_zone[1]*cs.HEIGHT_PPS))
+                    window.blit(constant_storage.WALL_SPRITE, (map_zone[0] *
+                                constant_storage.WIDTH_PPS,
+                                map_zone[1]*constant_storage.HEIGHT_PPS))
 
-            window.blit(cs.GUARD_SPRITE, (guard.position[0]*cs.WIDTH_PPS,
-                                          guard.position[1]*cs.HEIGHT_PPS))
-            window.blit(cs.MACGYVER_SPRITE, (macgyver.position[0]*cs.WIDTH_PPS,
-                                             macgyver.position[1] *
-                                             cs.HEIGHT_PPS))
+            window.blit(constant_storage.GUARD_SPRITE, (guard.position[0] *
+                        constant_storage.WIDTH_PPS,
+                        guard.position[1]*constant_storage.HEIGHT_PPS))
+            window.blit(constant_storage.MACGYVER_SPRITE,
+                        (macgyver.position[0]*constant_storage.WIDTH_PPS,
+                         macgyver.position[1]*constant_storage.HEIGHT_PPS))
 
             for event in pygame.event.get():
                 if moving_functions:
@@ -271,12 +257,7 @@ _plastique.png").convert()
                     if event.type == QUIT:
                         display = False
 
-            for i in range(0, len(items)):
-                Items.item_looted(items[i], macgyver)
-                if items[i].location is not None:
-                    name = vars()[items[i].name.strip()+"_SPRITE"]
-                    window.blit(name, (items[i].location[0]*(cs.WIDTH_PPS),
-                                       items[i].location[1]*(cs.HEIGHT_PPS)))
+            constant_storage.items_auto_finder(items, macgyver)
 
             if "seringue" not in macgyver.stuff:
                 MacGyver.craft(macgyver, items)
@@ -291,23 +272,21 @@ _plastique.png").convert()
                 moving_functions = False
 
 
-"""
-We define our main function, encapsulated in a conditional structure.
-We will successively call each method of each class, and finish
-by displaying the graphical interface.
-"""
-
-
 def main():
+    """
+    We define our main function, encapsulated in a conditional structure.
+    We will successively call each method of each class, and finish
+    by displaying the graphical interface.
+    """
 
-    path_builder = ti.path_builder()
+    path_builder = txt_interpretor.path_builder()
     my_map = Map(path_builder)
     practicable_zones = Map.practicable_zones(my_map, my_map.path_builder)
     global_map = Map.map_generation(my_map, my_map.height, my_map.width)
-    guard = ti.position_initializer("Guard")
-    macgyver = ti.position_initializer("MacGyver")
-    items = ti.items_creator(practicable_zones, guard)
-    print("Le jeu a été initialisé avec succès !")
+    guard = Guard()
+    macgyver = MacGyver()
+    items = txt_interpretor.items_creator(practicable_zones, guard)
+    lg.info("Le jeu a été initialisé avec succès !")
     Display.display_routine(global_map, practicable_zones,
                             guard, macgyver, items)
 
