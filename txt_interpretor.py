@@ -1,4 +1,4 @@
-import main_file
+from spliting import items_class
 
 
 def items_creator(practicable_zones, guard):
@@ -16,8 +16,8 @@ def items_creator(practicable_zones, guard):
         possible_positions = possible_positions + practicable_zones
         possible_positions.remove(guard.position)
         for line in itms:
-            line = main_file.Items(line)
-            main_file.Items.item_location(line, possible_positions)
+            line = items_class.Items(line)
+            items_class.Items.item_location(line, possible_positions)
             items.append(line)
             del possible_positions[line.item_index]
             del line.item_index

@@ -1,6 +1,6 @@
 import pygame
 
-import main_file
+from spliting import items_class
 
 HEIGHT_UNITY = 15
 WIDTH_UNITY = 15
@@ -35,7 +35,7 @@ def items_auto_finder(items, macgyver):
     TUBE_PLASTIQUE_SPRITE = pygame.image.load("display/\
 tube_plastique.png").convert()
     for i in range(0, len(items)):
-        main_file.Items.item_looted(items[i], macgyver)
+        items_class.Items.item_looted(items[i], macgyver)
         if items[i].location is not None:
             name = vars()[items[i].name.strip()+"_SPRITE"]
             window.blit(name, (items[i].location[0]*(WIDTH_PPS),
